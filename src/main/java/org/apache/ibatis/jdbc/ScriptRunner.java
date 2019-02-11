@@ -32,25 +32,40 @@ import java.util.regex.Pattern;
  */
 public class ScriptRunner {
 
+  //配置行隔离符
   private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
+  //配置隔离符
   private static final String DEFAULT_DELIMITER = ";";
 
+  //正则判断分隔符
   private static final Pattern DELIMITER_PATTERN = Pattern.compile("^\\s*((--)|(//))?\\s*(//)?\\s*@DELIMITER\\s+([^\\s]+)", Pattern.CASE_INSENSITIVE);
 
+  //连接，不允许修改
   private final Connection connection;
 
+  //报错的时候是否终止
   private boolean stopOnError;
+  //报出警告
   private boolean throwWarning;
+  //自动提交
   private boolean autoCommit;
+  //发送全部脚本
   private boolean sendFullScript;
+  //去除\r
   private boolean removeCRs;
+  //是否转义
   private boolean escapeProcessing = true;
 
+  //日志输出
   private PrintWriter logWriter = new PrintWriter(System.out);
+  //错误日志输出
   private PrintWriter errorLogWriter = new PrintWriter(System.err);
 
+  //分隔符
   private String delimiter = DEFAULT_DELIMITER;
+
+  //去除分隔符后的anything
   private boolean fullLineDelimiter;
 
   public ScriptRunner(Connection connection) {
@@ -159,6 +174,9 @@ public class ScriptRunner {
     }
   }
 
+  /**
+   * 设置自动提交
+   */
   private void setAutoCommit() {
     try {
       if (autoCommit != connection.getAutoCommit()) {
@@ -179,6 +197,9 @@ public class ScriptRunner {
     }
   }
 
+  /**
+   * 如果非自动提交回滚连接
+   */
   private void rollbackConnection() {
     try {
       if (!connection.getAutoCommit()) {
@@ -189,6 +210,10 @@ public class ScriptRunner {
     }
   }
 
+  /**
+   * 判断是否有结尾
+   * @param command
+   */
   private void checkForMissingLineTerminator(StringBuilder command) {
     if (command != null && command.toString().trim().length() > 0) {
       throw new RuntimeSqlException("Line missing end-of-line terminator (" + delimiter + ") => " + command);

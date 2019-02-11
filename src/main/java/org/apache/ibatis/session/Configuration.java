@@ -565,9 +565,12 @@ public class Configuration {
   }
 
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+    //如果未指定类型使用默认
     executorType = executorType == null ? defaultExecutorType : executorType;
+    //如果默认也为空 使用simple
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
+    //创建执行器
     if (ExecutorType.BATCH == executorType) {
       executor = new BatchExecutor(this, transaction);
     } else if (ExecutorType.REUSE == executorType) {
@@ -575,9 +578,11 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
+    //如果使用缓存，则创建缓存执行器
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
+    //添加插件
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
   }

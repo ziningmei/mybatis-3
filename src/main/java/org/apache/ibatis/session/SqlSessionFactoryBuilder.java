@@ -32,6 +32,11 @@ import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
  */
 public class SqlSessionFactoryBuilder {
 
+  /**
+   * 根据配置文件创建 SqlSessionFactory
+   * @param reader
+   * @return
+   */
   public SqlSessionFactory build(Reader reader) {
     return build(reader, null, null);
   }
@@ -40,6 +45,12 @@ public class SqlSessionFactoryBuilder {
     return build(reader, environment, null);
   }
 
+  /**
+   * 根据配置文件和属性创建 SqlSessionFactory
+   * @param reader
+   * @param properties
+   * @return
+   */
   public SqlSessionFactory build(Reader reader, Properties properties) {
     return build(reader, null, properties);
   }

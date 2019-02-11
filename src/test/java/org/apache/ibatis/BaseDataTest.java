@@ -38,7 +38,9 @@ public abstract class BaseDataTest {
   public static final String JPETSTORE_DATA = "org/apache/ibatis/databases/jpetstore/jpetstore-hsqldb-dataload.sql";
 
   public static UnpooledDataSource createUnpooledDataSource(String resource) throws IOException {
+    //解析property文件
     Properties props = Resources.getResourceAsProperties(resource);
+    //创建数据源
     UnpooledDataSource ds = new UnpooledDataSource();
     ds.setDriver(props.getProperty("driver"));
     ds.setUrl(props.getProperty("url"));
@@ -57,9 +59,17 @@ public abstract class BaseDataTest {
     return ds;
   }
 
+  /**
+   * 根据数据源 执行脚本
+   * @param ds
+   * @param resource
+   * @throws IOException
+   * @throws SQLException
+   */
   public static void runScript(DataSource ds, String resource) throws IOException, SQLException {
     Connection connection = ds.getConnection();
     try {
+      //初始化脚本执行器
       ScriptRunner runner = new ScriptRunner(connection);
       runner.setAutoCommit(true);
       runner.setStopOnError(false);
@@ -71,7 +81,15 @@ public abstract class BaseDataTest {
     }
   }
 
+  /**
+   * 通过执行器 执行脚本
+   * @param runner
+   * @param resource
+   * @throws IOException
+   * @throws SQLException
+   */
   public static void runScript(ScriptRunner runner, String resource) throws IOException, SQLException {
+    //读取资源文件
     Reader reader = Resources.getResourceAsReader(resource);
     try {
       runner.runScript(reader);
