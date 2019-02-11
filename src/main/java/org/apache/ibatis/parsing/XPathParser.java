@@ -115,6 +115,13 @@ public class XPathParser {
     this.document = createDocument(new InputSource(new StringReader(xml)));
   }
 
+  /**
+   * 根据文件，是否验证，参数，XPathParser
+   * @param reader
+   * @param validation
+   * @param variables
+   * @param entityResolver
+   */
   public XPathParser(Reader reader, boolean validation, Properties variables, EntityResolver entityResolver) {
     commonConstructor(validation, variables, entityResolver);
     this.document = createDocument(new InputSource(reader));

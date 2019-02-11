@@ -169,6 +169,7 @@ public class ClassLoaderWrapper {
 
   /*
    * Attempt to load a class from a group of classloaders
+   * 循环遍历初始化类
    *
    * @param name        - the class to load
    * @param classLoader - the group of classloaders to examine
@@ -177,6 +178,7 @@ public class ClassLoaderWrapper {
    */
   Class<?> classForName(String name, ClassLoader[] classLoader) throws ClassNotFoundException {
 
+    //循环遍历初始化类
     for (ClassLoader cl : classLoader) {
 
       if (null != cl) {

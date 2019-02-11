@@ -66,6 +66,12 @@ public class XMLConfigBuilder extends BaseBuilder {
     this(reader, environment, null);
   }
 
+  /**
+   * 通过文件，环境，属性创建xml配置建造者
+   * @param reader
+   * @param environment
+   * @param props
+   */
   public XMLConfigBuilder(Reader reader, String environment, Properties props) {
     this(new XPathParser(reader, true, props, new XMLMapperEntityResolver()), environment, props);
   }
@@ -82,6 +88,12 @@ public class XMLConfigBuilder extends BaseBuilder {
     this(new XPathParser(inputStream, true, props, new XMLMapperEntityResolver()), environment, props);
   }
 
+  /**
+   * 通过文件，环境，属性创建xml配置建造者
+   * @param parser
+   * @param environment
+   * @param props
+   */
   private XMLConfigBuilder(XPathParser parser, String environment, Properties props) {
     super(new Configuration());
     ErrorContext.instance().resource("SQL Mapper Configuration");
@@ -100,6 +112,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     return configuration;
   }
 
+  //通过xnode 配置configuration
   private void parseConfiguration(XNode root) {
     try {
       //issue #117 read properties first
