@@ -118,6 +118,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a Properties object
+   * 通过路径解析
    *
    * @param resource The resource to find
    * @return The resource
@@ -149,6 +150,8 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a Reader object
+   *
+   * 返回资源文件流
    *
    * @param resource The resource to find
    * @return The resource
@@ -237,6 +240,7 @@ public class Resources {
 
   /*
    * Gets a URL as a Properties object
+   * 通过url获取流
    *
    * @param urlString - the URL to get
    * @return A Properties object with the data from the URL

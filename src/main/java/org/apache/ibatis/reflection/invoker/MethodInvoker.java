@@ -20,18 +20,28 @@ import java.lang.reflect.Method;
 
 /**
  * @author Clinton Begin
+ * 方法调用类
  */
 public class MethodInvoker implements Invoker {
 
+  /**
+   * 类型
+   */
   private final Class<?> type;
+
+  /**
+   * 方法
+   */
   private final Method method;
 
   public MethodInvoker(Method method) {
     this.method = method;
 
+    //如果有参数，一般为set方法，则类型为第一个参数
     if (method.getParameterTypes().length == 1) {
       type = method.getParameterTypes()[0];
     } else {
+      //某则，则是get，类型为返回值
       type = method.getReturnType();
     }
   }

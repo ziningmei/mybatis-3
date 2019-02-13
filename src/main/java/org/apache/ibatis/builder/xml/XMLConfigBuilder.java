@@ -90,6 +90,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
   /**
    * 通过文件，环境，属性创建xml配置建造者
+   * 不对外开放，私有
    * @param parser
    * @param environment
    * @param props
@@ -112,35 +113,59 @@ public class XMLConfigBuilder extends BaseBuilder {
     return configuration;
   }
 
-  //通过xnode 配置configuration
+  /**
+   * 通过xnode 解析configuration
+   *
+   * @param root
+   */
   private void parseConfiguration(XNode root) {
     try {
       //issue #117 read properties first
+      //加载properties
       propertiesElement(root.evalNode("properties"));
+      //加载settings
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+      //vfs配置
       loadCustomVfs(settings);
+      //别名配置
       typeAliasesElement(root.evalNode("typeAliases"));
+      //插件配置
       pluginElement(root.evalNode("plugins"));
+      //对象工厂配置
       objectFactoryElement(root.evalNode("objectFactory"));
+      //对象包装器配置
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+      //反射工厂
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
+      //配置文件解析
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
+      //环境解析
       environmentsElement(root.evalNode("environments"));
+      //数据库厂商标识解析
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      //类型处理
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // SQL 映射语句
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
     }
   }
 
+  /**
+   * 解析配置属性
+   * @param context
+   * @return
+   */
   private Properties settingsAsProperties(XNode context) {
     if (context == null) {
       return new Properties();
     }
+    //读取子配置
     Properties props = context.getChildrenAsProperties();
     // Check that all settings are known to the configuration class
+    // 判断所有的属性都是Configuration 类里面的，且有setter方法
     MetaClass metaConfig = MetaClass.forClass(Configuration.class, localReflectorFactory);
     for (Object key : props.keySet()) {
       if (!metaConfig.hasSetter(String.valueOf(key))) {
@@ -226,23 +251,35 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 加载外部配置，用于动态替换
+   * @param context
+   * @throws Exception
+   */
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
+      //将属性解析出来
       Properties defaults = context.getChildrenAsProperties();
+      //获取资源文件地址
+
       String resource = context.getStringAttribute("resource");
+      //获取资源文件url地址
       String url = context.getStringAttribute("url");
       if (resource != null && url != null) {
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
+      //通过路径获取文件地址
       if (resource != null) {
         defaults.putAll(Resources.getResourceAsProperties(resource));
       } else if (url != null) {
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
+      //如果有配置属性，全部添加进去
       Properties vars = configuration.getVariables();
       if (vars != null) {
         defaults.putAll(vars);
       }
+      //设置属性
       parser.setVariables(defaults);
       configuration.setVariables(defaults);
     }

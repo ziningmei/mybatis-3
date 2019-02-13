@@ -27,6 +27,7 @@ import java.util.Arrays;
 
 /**
  * @author Iwao AVE!
+ * 类型参数处理器
  */
 public class TypeParameterResolver {
 
@@ -45,7 +46,9 @@ public class TypeParameterResolver {
    *         they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveReturnType(Method method, Type srcType) {
+    //正式返回类型
     Type returnType = method.getGenericReturnType();
+    //获取方法都声明类
     Class<?> declaringClass = method.getDeclaringClass();
     return resolveType(returnType, srcType, declaringClass);
   }
@@ -64,6 +67,13 @@ public class TypeParameterResolver {
     return result;
   }
 
+  /**
+   * 返回具体类型（复杂都逻辑 {@link TypeVariable},{@link ParameterizedType},{@link GenericArrayType}）
+   * @param type
+   * @param srcType
+   * @param declaringClass
+   * @return
+   */
   private static Type resolveType(Type type, Type srcType, Class<?> declaringClass) {
     if (type instanceof TypeVariable) {
       return resolveTypeVar((TypeVariable<?>) type, srcType, declaringClass);
