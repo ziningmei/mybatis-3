@@ -145,8 +145,16 @@ public class XPathParser {
     return evalString(document, expression);
   }
 
+  /**
+   * 解析string
+   * @param root
+   * @param expression
+   * @return
+   */
   public String evalString(Object root, String expression) {
+    //获取解析的值
     String result = (String) evaluate(expression, root, XPathConstants.STRING);
+    //
     result = PropertyParser.parse(result, variables);
     return result;
   }
@@ -199,13 +207,22 @@ public class XPathParser {
     return (Double) evaluate(expression, root, XPathConstants.NUMBER);
   }
 
+
   public List<XNode> evalNodes(String expression) {
     return evalNodes(document, expression);
   }
 
+  /**
+   * 批量获取节点
+   * @param root
+   * @param expression
+   * @return
+   */
   public List<XNode> evalNodes(Object root, String expression) {
     List<XNode> xnodes = new ArrayList<>();
+    //获取node数组
     NodeList nodes = (NodeList) evaluate(expression, root, XPathConstants.NODESET);
+    //封装list
     for (int i = 0; i < nodes.getLength(); i++) {
       xnodes.add(new XNode(this, nodes.item(i), variables));
     }
@@ -224,6 +241,14 @@ public class XPathParser {
     return new XNode(this, node, variables);
   }
 
+  /**
+   * 获取指定元素或者节点的值
+   *
+   * @param expression 表达式
+   * @param root 指定节点
+   * @param returnType 返回类型
+   * @return
+   */
   private Object evaluate(String expression, Object root, QName returnType) {
     try {
       return xpath.evaluate(expression, root, returnType);
@@ -232,20 +257,36 @@ public class XPathParser {
     }
   }
 
+  /**
+   * 创建document对象
+   * @param inputSource
+   * @return
+   */
   private Document createDocument(InputSource inputSource) {
     // important: this must only be called AFTER common constructor
     try {
+      //创建DocumentBuilderFactory
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      //设置是否校验xml
       factory.setValidating(validation);
 
+      //是否支持命名空间
       factory.setNamespaceAware(false);
+      //是否忽略注释
       factory.setIgnoringComments(true);
+      //是否忽略空白元素
       factory.setIgnoringElementContentWhitespace(false);
+      //是否转义CDATA
       factory.setCoalescing(false);
+      //是否拓展实体引用
       factory.setExpandEntityReferences(true);
 
+      //创建DocumentBuilder
       DocumentBuilder builder = factory.newDocumentBuilder();
+
+      //设置实体解析器
       builder.setEntityResolver(entityResolver);
+      //设置错误处理
       builder.setErrorHandler(new ErrorHandler() {
         @Override
         public void error(SAXParseException exception) throws SAXException {
@@ -261,6 +302,7 @@ public class XPathParser {
         public void warning(SAXParseException exception) throws SAXException {
         }
       });
+      //解析xml文件
       return builder.parse(inputSource);
     } catch (Exception e) {
       throw new BuilderException("Error creating document instance.  Cause: " + e, e);
@@ -271,6 +313,7 @@ public class XPathParser {
     this.validation = validation;
     this.entityResolver = entityResolver;
     this.variables = variables;
+    // 创建XPathFactory对象
     XPathFactory factory = XPathFactory.newInstance();
     this.xpath = factory.newXPath();
   }
