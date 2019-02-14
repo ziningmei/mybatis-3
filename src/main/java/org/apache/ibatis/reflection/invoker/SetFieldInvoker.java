@@ -22,18 +22,33 @@ import java.lang.reflect.InvocationTargetException;
  * @author Clinton Begin
  */
 public class SetFieldInvoker implements Invoker {
+  /**
+   * field对象
+   */
   private final Field field;
 
   public SetFieldInvoker(Field field) {
     this.field = field;
   }
 
+  /**
+   * 获取Field属性
+   * @param target
+   * @param args
+   * @return
+   * @throws IllegalAccessException
+   * @throws InvocationTargetException
+   */
   @Override
   public Object invoke(Object target, Object[] args) throws IllegalAccessException, InvocationTargetException {
     field.set(target, args[0]);
     return null;
   }
 
+  /**
+   * 获取属性类型
+   * @return
+   */
   @Override
   public Class<?> getType() {
     return field.getType();

@@ -100,7 +100,7 @@ public class Reflector {
     addGetMethods(clazz);
     //添加set方法
     addSetMethods(clazz);
-    //
+    //添加非getting和setting方法的field
     addFields(clazz);
     readablePropertyNames = getMethods.keySet().toArray(new String[getMethods.keySet().size()]);
     writeablePropertyNames = setMethods.keySet().toArray(new String[setMethods.keySet().size()]);
@@ -113,9 +113,12 @@ public class Reflector {
   }
 
   private void addDefaultConstructor(Class<?> clazz) {
+    //获取所有构造方法
     Constructor<?>[] consts = clazz.getDeclaredConstructors();
     for (Constructor<?> constructor : consts) {
+      //找到无参构造函数
       if (constructor.getParameterTypes().length == 0) {
+        //判断构造方法是不是private修饰
         if (canControlMemberAccessible()) {
           try {
             constructor.setAccessible(true);
@@ -124,6 +127,7 @@ public class Reflector {
             //如果是final 的，不可达
           }
         }
+        //如果可以访问，添加
         if (constructor.isAccessible()) {
           this.defaultConstructor = constructor;
         }
@@ -132,22 +136,35 @@ public class Reflector {
   }
 
   private void addGetMethods(Class<?> cls) {
+    //获取属性名称和方法都映射
     Map<String, List<Method>> conflictingGetters = new HashMap<>();
+    //获取所有方法
     Method[] methods = getClassMethods(cls);
+
+
     for (Method method : methods) {
+      //如果有参数，过滤
       if (method.getParameterTypes().length > 0) {
         continue;
       }
       String name = method.getName();
+      //判断是getting方法
       if ((name.startsWith("get") && name.length() > 3)
           || (name.startsWith("is") && name.length() > 2)) {
+        //获取属性名称
         name = PropertyNamer.methodToProperty(name);
+        //添加到 conflictingGetters
         addMethodConflict(conflictingGetters, name, method);
       }
     }
+    //处理getting冲突
     resolveGetterConflicts(conflictingGetters);
   }
 
+  /**
+   * 处理getting冲突
+   * @param conflictingGetters
+   */
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
     // 遍历每个属性，查找其最匹配的方法。因为子类可以覆写父类的方法，所以一个属性，可能对应多个 getting 方法
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
@@ -217,17 +234,21 @@ public class Reflector {
    */
   private void addSetMethods(Class<?> cls) {
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
+    //获取所有的方法
     Method[] methods = getClassMethods(cls);
     //循环遍历，添加set方法
     for (Method method : methods) {
       String name = method.getName();
+      //判断是setting方法
       if (name.startsWith("set") && name.length() > 3) {
         if (method.getParameterTypes().length == 1) {
           name = PropertyNamer.methodToProperty(name);
+          //添加方法
           addMethodConflict(conflictingSetters, name, method);
         }
       }
     }
+    //处理冲突
     resolveSetterConflicts(conflictingSetters);
   }
 
@@ -256,7 +277,7 @@ public class Reflector {
         }
         if (exception == null) {
           try {
-            //找一个更匹配都
+            //找一个更匹配的额
             match = pickBetterSetter(match, setter, propName);
           } catch (ReflectionException e) {
             // there could still be the 'best match'
@@ -336,8 +357,10 @@ public class Reflector {
   }
 
   private void addFields(Class<?> clazz) {
+    //获取所有的field
     Field[] fields = clazz.getDeclaredFields();
     for (Field field : fields) {
+      //设置可访问
       if (canControlMemberAccessible()) {
         try {
           field.setAccessible(true);
@@ -345,12 +368,14 @@ public class Reflector {
           // Ignored. This is only a final precaution, nothing we can do.
         }
       }
+      //添加到get和set方法数组里面
       if (field.isAccessible()) {
         if (!setMethods.containsKey(field.getName())) {
           // issue #379 - removed the check for final because JDK 1.5 allows
           // modification of final fields through reflection (JSR-133). (JGB)
           // pr #16 - final static can only be set by the classloader
           int modifiers = field.getModifiers();
+          // 去除常量
           if (!(Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers))) {
             addSetField(field);
           }
@@ -360,23 +385,40 @@ public class Reflector {
         }
       }
     }
+    // 递归处理父类
     if (clazz.getSuperclass() != null) {
       addFields(clazz.getSuperclass());
     }
   }
 
+  /**
+   * 添加set field
+   * @param field
+   */
   private void addSetField(Field field) {
+    //是有效到属性
     if (isValidPropertyName(field.getName())) {
+      //添加到setMethods
       setMethods.put(field.getName(), new SetFieldInvoker(field));
+      //获取type
       Type fieldType = TypeParameterResolver.resolveFieldType(field, type);
+      //添加到setTypes
       setTypes.put(field.getName(), typeToClass(fieldType));
     }
   }
 
+  /**
+   * 添加getfield
+   * @param field
+   */
   private void addGetField(Field field) {
+    //是有效到属性
     if (isValidPropertyName(field.getName())) {
+      //添加到setMethods
       getMethods.put(field.getName(), new GetFieldInvoker(field));
+      //获取type
       Type fieldType = TypeParameterResolver.resolveFieldType(field, type);
+      //添加到setTypes
       getTypes.put(field.getName(), typeToClass(fieldType));
     }
   }
@@ -395,38 +437,51 @@ public class Reflector {
    * declared in this class and any superclass.
    * We use this method, instead of the simpler Class.getMethods(),
    * because we want to look for private methods as well.
+   * 获取类里面所有的方法
    *
    * @param cls The class
    * @return An array containing all methods in this class
    */
   private Method[] getClassMethods(Class<?> cls) {
+    //方法名称和方法的映射
     Map<String, Method> uniqueMethods = new HashMap<>();
     Class<?> currentClass = cls;
     while (currentClass != null && currentClass != Object.class) {
+
+      //添加方法
       addUniqueMethods(uniqueMethods, currentClass.getDeclaredMethods());
 
       // we also need to look for interface methods -
       // because the class may be abstract
+      // 获取实现的接口
       Class<?>[] interfaces = currentClass.getInterfaces();
+      // 获取接口方法
       for (Class<?> anInterface : interfaces) {
         addUniqueMethods(uniqueMethods, anInterface.getMethods());
       }
 
+      //获取父类
       currentClass = currentClass.getSuperclass();
     }
 
+    //获取所有的方法
     Collection<Method> methods = uniqueMethods.values();
 
+    //转化为数组返回
     return methods.toArray(new Method[methods.size()]);
   }
 
   private void addUniqueMethods(Map<String, Method> uniqueMethods, Method[] methods) {
+
     for (Method currentMethod : methods) {
+      //过滤桥接方法
       if (!currentMethod.isBridge()) {
+        //获取签名
         String signature = getSignature(currentMethod);
         // check to see if the method is already known
         // if it is known, then an extended class must have
         // overridden a method
+        // 如果方法不存在，则添加
         if (!uniqueMethods.containsKey(signature)) {
           if (canControlMemberAccessible()) {
             try {
@@ -435,13 +490,18 @@ public class Reflector {
               // Ignored. This is only a final precaution, nothing we can do.
             }
           }
-
+          //添加
           uniqueMethods.put(signature, currentMethod);
         }
       }
     }
   }
 
+  /**
+   * 获取签名 returnType#方法名:参数名1,参数名2,参数名3
+   * @param method
+   * @return
+   */
   private String getSignature(Method method) {
     StringBuilder sb = new StringBuilder();
     Class<?> returnType = method.getReturnType();
@@ -463,7 +523,7 @@ public class Reflector {
 
   /**
    * Checks whether can control member accessible.
-   * 成员是否可达校验
+   * 是否可以访问校验
    *
    * @return If can control member accessible, it return {@literal true}
    * @since 3.5.0
