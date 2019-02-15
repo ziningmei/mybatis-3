@@ -24,11 +24,18 @@ import org.apache.ibatis.cache.CacheException;
 
 /**
  * @author Clinton Begin
+ * 不过期缓存
  */
 public class PerpetualCache implements Cache {
 
+  /**
+   * id
+   */
   private final String id;
 
+  /**
+   * 缓存容器
+   */
   private Map<Object, Object> cache = new HashMap<>();
 
   public PerpetualCache(String id) {

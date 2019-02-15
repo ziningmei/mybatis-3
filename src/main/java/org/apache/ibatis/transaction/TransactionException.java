@@ -19,6 +19,9 @@ import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
  * @author Clinton Begin
+ *
+ * 事务错误信息
+ *
  */
 public class TransactionException extends PersistenceException {
 

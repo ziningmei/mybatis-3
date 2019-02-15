@@ -38,9 +38,24 @@ public class ManagedTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(ManagedTransaction.class);
 
+  /**
+   * 数据源
+   */
   private DataSource dataSource;
+
+  /**
+   * 隔离级别
+   */
   private TransactionIsolationLevel level;
+
+  /**
+   * 连接
+   */
   private Connection connection;
+
+  /**
+   * 连接是否关闭
+   */
   private final boolean closeConnection;
 
   public ManagedTransaction(Connection connection, boolean closeConnection) {

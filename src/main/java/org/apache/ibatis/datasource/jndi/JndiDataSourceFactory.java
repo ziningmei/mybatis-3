@@ -28,6 +28,7 @@ import org.apache.ibatis.datasource.DataSourceFactory;
 
 /**
  * @author Clinton Begin
+ * JNDI 数据源工厂
  */
 public class JndiDataSourceFactory implements DataSourceFactory {
 
@@ -40,14 +41,18 @@ public class JndiDataSourceFactory implements DataSourceFactory {
   @Override
   public void setProperties(Properties properties) {
     try {
+      //定义InitialContext
       InitialContext initCtx;
+      //获取系统属性
       Properties env = getEnvProperties(properties);
+      //创建InitialContext
       if (env == null) {
         initCtx = new InitialContext();
       } else {
         initCtx = new InitialContext(env);
       }
 
+      //获取DataSource对象
       if (properties.containsKey(INITIAL_CONTEXT)
           && properties.containsKey(DATA_SOURCE)) {
         Context ctx = (Context) initCtx.lookup(properties.getProperty(INITIAL_CONTEXT));
@@ -66,6 +71,11 @@ public class JndiDataSourceFactory implements DataSourceFactory {
     return dataSource;
   }
 
+  /**
+   * 获取系统属性
+   * @param allProps
+   * @return
+   */
   private static Properties getEnvProperties(Properties allProps) {
     final String PREFIX = ENV_PREFIX;
     Properties contextProperties = null;

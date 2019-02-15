@@ -26,35 +26,70 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 
 /**
  * @author Clinton Begin
+ *
+ * 非池化的数据源
  */
 public class UnpooledDataSourceFactory implements DataSourceFactory {
 
+  /**
+   * 驱动属性前缀
+   */
   private static final String DRIVER_PROPERTY_PREFIX = "driver.";
+
+  /**
+   * 前缀长度
+   */
   private static final int DRIVER_PROPERTY_PREFIX_LENGTH = DRIVER_PROPERTY_PREFIX.length();
 
+  /**
+   * 数据源
+   */
   protected DataSource dataSource;
 
+  /**
+   * 构造函数
+   */
   public UnpooledDataSourceFactory() {
     this.dataSource = new UnpooledDataSource();
   }
 
+  /**
+   * 设置属性
+   * @param properties
+   */
   @Override
   public void setProperties(Properties properties) {
+    // 驱动属性
     Properties driverProperties = new Properties();
+    // 创建MetaObject
     MetaObject metaDataSource = SystemMetaObject.forObject(dataSource);
+
+    // 循环设置属性
     for (Object key : properties.keySet()) {
+      //获取属性名称
       String propertyName = (String) key;
+
+      //如果是驱动
       if (propertyName.startsWith(DRIVER_PROPERTY_PREFIX)) {
+
+        //获取属性值
         String value = properties.getProperty(propertyName);
+
+        //设置属性
         driverProperties.setProperty(propertyName.substring(DRIVER_PROPERTY_PREFIX_LENGTH), value);
+        //如果有set方法
       } else if (metaDataSource.hasSetter(propertyName)) {
+        //获取属性值
         String value = (String) properties.get(propertyName);
+        //获取转化后的类型
         Object convertedValue = convertValue(metaDataSource, propertyName, value);
+        //设置属性
         metaDataSource.setValue(propertyName, convertedValue);
       } else {
         throw new DataSourceException("Unknown DataSource property: " + propertyName);
       }
     }
+    //如果驱动属性存在，则赋值
     if (driverProperties.size() > 0) {
       metaDataSource.setValue("driverProperties", driverProperties);
     }
@@ -65,6 +100,13 @@ public class UnpooledDataSourceFactory implements DataSourceFactory {
     return dataSource;
   }
 
+  /**
+   * 类型转化
+   * @param metaDataSource
+   * @param propertyName
+   * @param value
+   * @return
+   */
   private Object convertValue(MetaObject metaDataSource, String propertyName, String value) {
     Object convertedValue = value;
     Class<?> targetType = metaDataSource.getSetterType(propertyName);

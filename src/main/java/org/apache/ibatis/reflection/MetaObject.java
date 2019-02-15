@@ -29,13 +29,29 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
  * @author Clinton Begin
+ * 源对象
  */
 public class MetaObject {
 
+  /**
+   * 初始对象
+   */
   private final Object originalObject;
+  /**
+   * 对象包装器
+   */
   private final ObjectWrapper objectWrapper;
+  /**
+   * 对象工厂
+   */
   private final ObjectFactory objectFactory;
+  /**
+   * 对象包装工厂
+   */
   private final ObjectWrapperFactory objectWrapperFactory;
+  /**
+   * 反射器工厂
+   */
   private final ReflectorFactory reflectorFactory;
 
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
