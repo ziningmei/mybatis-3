@@ -24,19 +24,25 @@ import java.util.Date;
 
 /**
  * @author Clinton Begin
+ *
+ * 日期类型转换
  */
 public class DateTypeHandler extends BaseTypeHandler<Date> {
 
   @Override
   public void setNonNullParameter(PreparedStatement ps, int i, Date parameter, JdbcType jdbcType)
       throws SQLException {
+    //设置时间
     ps.setTimestamp(i, new Timestamp(parameter.getTime()));
   }
 
   @Override
   public Date getNullableResult(ResultSet rs, String columnName)
       throws SQLException {
+    //获取时间戳
     Timestamp sqlTimestamp = rs.getTimestamp(columnName);
+
+    //日期转化
     if (sqlTimestamp != null) {
       return new Date(sqlTimestamp.getTime());
     }
@@ -47,6 +53,8 @@ public class DateTypeHandler extends BaseTypeHandler<Date> {
   public Date getNullableResult(ResultSet rs, int columnIndex)
       throws SQLException {
     Timestamp sqlTimestamp = rs.getTimestamp(columnIndex);
+
+    //日期转化
     if (sqlTimestamp != null) {
       return new Date(sqlTimestamp.getTime());
     }
@@ -57,6 +65,8 @@ public class DateTypeHandler extends BaseTypeHandler<Date> {
   public Date getNullableResult(CallableStatement cs, int columnIndex)
       throws SQLException {
     Timestamp sqlTimestamp = cs.getTimestamp(columnIndex);
+
+    //日期转化
     if (sqlTimestamp != null) {
       return new Date(sqlTimestamp.getTime());
     }

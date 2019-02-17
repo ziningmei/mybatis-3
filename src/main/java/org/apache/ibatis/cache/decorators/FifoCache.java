@@ -23,13 +23,25 @@ import org.apache.ibatis.cache.Cache;
 
 /**
  * FIFO (first in, first out) cache decorator
+ * 先进先出缓存
  *
  * @author Clinton Begin
  */
 public class FifoCache implements Cache {
 
+  /**
+   * 委托的缓存
+   */
   private final Cache delegate;
+
+  /**
+   * 双端队列，记录缓存键的添加
+   */
   private final Deque<Object> keyList;
+
+  /**
+   * 队列上限
+   */
   private int size;
 
   public FifoCache(Cache delegate) {
@@ -79,6 +91,10 @@ public class FifoCache implements Cache {
     return null;
   }
 
+  /**
+   * 维护一个队列，如果超过最大值，移除最开始的那个
+   * @param key
+   */
   private void cycleKeyList(Object key) {
     keyList.addLast(key);
     if (keyList.size() > size) {

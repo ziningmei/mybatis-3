@@ -22,6 +22,8 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
+ *
+ * 枚举类型转化，转化为string
  */
 public class EnumTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 

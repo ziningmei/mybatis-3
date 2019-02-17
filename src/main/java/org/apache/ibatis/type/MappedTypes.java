@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * @author Eduardo Macarron
+ *
+ * MappedTypes注解
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -22,10 +22,19 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
+ *
+ * 枚举值转化，int和enum转化
  */
 public class EnumOrdinalTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> {
 
+  /**
+   * 枚举类
+   */
   private final Class<E> type;
+
+  /**
+   * 枚举值list
+   */
   private final E[] enums;
 
   public EnumOrdinalTypeHandler(Class<E> type) {

@@ -21,11 +21,24 @@ import org.apache.ibatis.cache.Cache;
 
 /**
  * @author Clinton Begin
+ *
+ * 定时清空缓存
  */
 public class ScheduledCache implements Cache {
 
+  /**
+   * 被委托的缓存
+   */
   private final Cache delegate;
+
+  /**
+   * 清空间隔
+   */
   protected long clearInterval;
+
+  /**
+   * 上次清除时间
+   */
   protected long lastClear;
 
   public ScheduledCache(Cache delegate) {
@@ -87,6 +100,10 @@ public class ScheduledCache implements Cache {
     return delegate.equals(obj);
   }
 
+  /**
+   * 判断是否全部清空
+   * @return
+   */
   private boolean clearWhenStale() {
     if (System.currentTimeMillis() - lastClear > clearInterval) {
       clear();

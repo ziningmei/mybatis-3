@@ -31,6 +31,8 @@ import org.apache.ibatis.io.Resources;
 
 /**
  * @author Clinton Begin
+ *
+ * 支持序列号的缓存
  */
 public class SerializedCache implements Cache {
 
@@ -53,6 +55,7 @@ public class SerializedCache implements Cache {
   @Override
   public void putObject(Object key, Object object) {
     if (object == null || object instanceof Serializable) {
+      //序列号
       delegate.putObject(key, serialize((Serializable) object));
     } else {
       throw new CacheException("SharedCache failed to make a copy of a non-serializable object: " + object);
@@ -90,7 +93,13 @@ public class SerializedCache implements Cache {
     return delegate.equals(obj);
   }
 
+  /**
+   * 序列化
+   * @param value
+   * @return
+   */
   private byte[] serialize(Serializable value) {
+
     try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
          ObjectOutputStream oos = new ObjectOutputStream(bos)) {
       oos.writeObject(value);

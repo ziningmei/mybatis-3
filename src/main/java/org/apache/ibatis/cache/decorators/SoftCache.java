@@ -26,10 +26,12 @@ import org.apache.ibatis.cache.Cache;
 /**
  * Soft Reference cache decorator
  * Thanks to Dr. Heinz Kabutz for his guidance here.
+ * 软引用，类似与{@link WeakCache}
  *
  * @author Clinton Begin
  */
 public class SoftCache implements Cache {
+
   private final Deque<Object> hardLinksToAvoidGarbageCollection;
   private final ReferenceQueue<Object> queueOfGarbageCollectedEntries;
   private final Cache delegate;

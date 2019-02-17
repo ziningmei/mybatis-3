@@ -29,6 +29,8 @@ import org.apache.ibatis.session.Configuration;
  * Important: Since 3.5.0, This class never call the {@link ResultSet#wasNull()} and
  * {@link CallableStatement#wasNull()} method for handling the SQL {@code NULL} value.
  * In other words, {@code null} value handling should be performed on subclass.
+ *
+ * 基础类型处理
  * </p>
  * 
  * @author Clinton Begin
@@ -53,7 +55,9 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
 
   @Override
   public void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException {
+    //如果参数为空
     if (parameter == null) {
+      //如果jdbcType唯恐
       if (jdbcType == null) {
         throw new TypeException("JDBC requires that the JdbcType must be specified for all nullable parameters.");
       }
@@ -64,7 +68,9 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
                 "Try setting a different JdbcType for this parameter or a different jdbcTypeForNull configuration property. " +
                 "Cause: " + e, e);
       }
+      // 参数非空时，设置对应的参数
     } else {
+
       try {
         setNonNullParameter(ps, i, parameter, jdbcType);
       } catch (Exception e) {
@@ -102,6 +108,14 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
   }
 
+  /**
+   * 设置非空参数
+   * @param ps
+   * @param i
+   * @param parameter
+   * @param jdbcType
+   * @throws SQLException
+   */
   public abstract void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
   public abstract T getNullableResult(ResultSet rs, String columnName) throws SQLException;

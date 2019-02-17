@@ -22,15 +22,53 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
+ * 类型转换器
  */
 public interface TypeHandler<T> {
 
+  /**
+   * 设置参数
+   *
+   * Java Type => JDBC Type
+   * @param ps
+   * @param i
+   * @param parameter
+   * @param jdbcType
+   * @throws SQLException
+   */
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
+  /**
+   * 根据列名获取结果
+   *
+   * JDBC Type => Java Type
+   * @param rs
+   * @param columnName
+   * @return
+   * @throws SQLException
+   */
   T getResult(ResultSet rs, String columnName) throws SQLException;
 
+  /**
+   * 根据index获取结果
+   *
+   * JDBC Type => Java Type
+   * @param rs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
 
+  /**
+   * 获得 CallableStatement 的指定字段的值
+   *
+   * JDBC Type => Java Type
+   * @param cs
+   * @param columnIndex
+   * @return
+   * @throws SQLException
+   */
   T getResult(CallableStatement cs, int columnIndex) throws SQLException;
 
 }
