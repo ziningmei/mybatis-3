@@ -21,6 +21,8 @@ import java.util.Map;
 
 /**
  * @author Clinton Begin
+ *
+ * 数据库类型的枚举
  */
 public enum JdbcType {
   /*

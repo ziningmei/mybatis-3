@@ -27,16 +27,21 @@ import java.util.Properties;
 
 /**
  * A class to simplify access to resources through the classloader.
+ * 获取资源工具类
  *
  * @author Clinton Begin
  */
 public class Resources {
 
+  /**
+   * ClassLoaderWrapper 对象
+   */
   private static ClassLoaderWrapper classLoaderWrapper = new ClassLoaderWrapper();
 
   /*
    * Charset to use when calling getResourceAsReader.
    * null means use the system default.
+   * 字符集
    */
   private static Charset charset;
 
@@ -63,6 +68,8 @@ public class Resources {
 
   /*
    * Returns the URL of the resource on the classpath
+   *
+   * 获取指定资源url
    *
    * @param resource The resource to find
    * @return The resource
@@ -91,6 +98,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a Stream object
+   * 获得指定资源的 InputStream
    *
    * @param resource The resource to find
    * @return The resource
@@ -118,7 +126,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a Properties object
-   * 通过路径解析
+   * 获得指定资源的 Properties
    *
    * @param resource The resource to find
    * @return The resource
@@ -134,6 +142,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a Properties object
+   * 获得指定资源的 Properties
    *
    * @param loader   The classloader used to fetch the resource
    * @param resource The resource to find
@@ -169,6 +178,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a Reader object
+   * 获得指定资源的 Reader
    *
    * @param loader   The classloader used to fetch the resource
    * @param resource The resource to find
@@ -187,6 +197,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a File object
+   * 获得指定资源的 File
    *
    * @param resource The resource to find
    * @return The resource
@@ -198,6 +209,7 @@ public class Resources {
 
   /*
    * Returns a resource on the classpath as a File object
+   * 获得指定资源的 File
    *
    * @param loader   - the classloader used to fetch the resource
    * @param resource - the resource to find
@@ -224,6 +236,7 @@ public class Resources {
   /*
    * Gets a URL as a Reader
    *
+   *
    * @param urlString - the URL to get
    * @return A Reader with the data from the URL
    * @throws java.io.IOException If the resource cannot be found or read
@@ -240,7 +253,7 @@ public class Resources {
 
   /*
    * Gets a URL as a Properties object
-   * 通过url获取流
+   * 获得指定 URL
    *
    * @param urlString - the URL to get
    * @return A Properties object with the data from the URL
@@ -256,6 +269,7 @@ public class Resources {
 
   /*
    * Loads a class
+   * 获取类
    *
    * @param className - the class to fetch
    * @return The loaded class

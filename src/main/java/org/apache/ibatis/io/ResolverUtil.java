@@ -54,17 +54,21 @@ import org.apache.ibatis.logging.LogFactory;
  * Collection&lt;ActionBean&gt; beans = resolver.getClasses();
  * </pre>
  *
+ * 解析工具类，获得指定目录符合条件的类
+ *
  * @author Tim Fennell
  */
 public class ResolverUtil<T> {
   /*
    * An instance of Log to use for logging in this class.
+   * 日志工厂
    */
   private static final Log log = LogFactory.getLog(ResolverUtil.class);
 
   /**
    * A simple interface that specifies how to test classes to determine if they
    * are to be included in the results produced by the ResolverUtil.
+   * 匹配判断接口
    */
   public interface Test {
     /**
@@ -77,6 +81,8 @@ public class ResolverUtil<T> {
   /**
    * A Test that checks to see if each class is assignable to the provided class. Note
    * that this test will match the parent type itself if it is presented for matching.
+   *
+   * 判断是否为指定类
    */
   public static class IsA implements Test {
     private Class<?> parent;
@@ -101,6 +107,8 @@ public class ResolverUtil<T> {
   /**
    * A Test that checks to see if each class is annotated with a specific annotation. If it
    * is, then the test returns true, otherwise false.
+   *
+   * 判断类是否有指定🎍
    */
   public static class AnnotatedWith implements Test {
     private Class<? extends Annotation> annotation;
@@ -123,6 +131,7 @@ public class ResolverUtil<T> {
   }
 
   /** The set of matches being accumulated. */
+  //符合条件的类的集合
   private Set<Class<? extends T>> matches = new HashSet<>();
 
   /**
@@ -167,6 +176,8 @@ public class ResolverUtil<T> {
    * of a non-interface class, subclasses will be collected.  Accumulated classes can be
    * accessed by calling {@link #getClasses()}.
    *
+   * 判断指定目录下们，符合指定类的类
+   *
    * @param parent the class of interface to find subclasses or implementations of
    * @param packageNames one or more package names to scan (including subpackages) for classes
    */
@@ -186,6 +197,7 @@ public class ResolverUtil<T> {
   /**
    * Attempts to discover classes that are annotated with the annotation. Accumulated
    * classes can be accessed by calling {@link #getClasses()}.
+   * 判断指定目录下们，符合指定注解的类
    *
    * @param annotation the annotation that should be present on matching classes
    * @param packageNames one or more package names to scan (including subpackages) for classes
@@ -208,6 +220,8 @@ public class ResolverUtil<T> {
    * Each class is offered up to the Test as it is discovered, and if the Test returns
    * true the class is retained.  Accumulated classes can be fetched by calling
    * {@link #getClasses()}.
+   *
+   * 获得指定包下，符合条件的类。
    *
    * @param test an instance of {@link Test} that will be used to filter classes
    * @param packageName the name of the package from which to start scanning for
@@ -233,6 +247,7 @@ public class ResolverUtil<T> {
   /**
    * Converts a Java package name to a path that can be looked up with a call to
    * {@link ClassLoader#getResources(String)}.
+   * 获得包的路径
    * 
    * @param packageName The Java package name to convert to a path
    */
@@ -243,6 +258,7 @@ public class ResolverUtil<T> {
   /**
    * Add the class designated by the fully qualified class name provided to the set of
    * resolved classes if and only if it is approved by the Test supplied.
+   * 如果匹配则添加
    *
    * @param test the test used to determine if the class matches
    * @param fqn the fully qualified name of a class

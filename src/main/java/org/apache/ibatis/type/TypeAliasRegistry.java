@@ -34,9 +34,13 @@ import org.apache.ibatis.io.Resources;
 
 /**
  * @author Clinton Begin
+ * 类型与别名的映射。
  */
 public class TypeAliasRegistry {
 
+  /**
+   * 名称和类到映射
+   */
   private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<>();
 
   public TypeAliasRegistry() {
@@ -125,10 +129,17 @@ public class TypeAliasRegistry {
     registerAliases(packageName, Object.class);
   }
 
+  /**
+   * 注册指定包下的别名与类的映射。另外，要求类必须是 {@param superType} 类型（包括子类）。
+   * @param packageName
+   * @param superType
+   */
   public void registerAliases(String packageName, Class<?> superType){
+    //获取指定包下的类
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> typeSet = resolverUtil.getClasses();
+    // 遍历，逐个注册类型与别名的注册表
     for(Class<?> type : typeSet){
       // Ignore inner classes and interfaces (including package-info.java)
       // Skip also inner classes. See issue #6
@@ -147,18 +158,30 @@ public class TypeAliasRegistry {
     registerAlias(alias, type);
   }
 
+  /**
+   * 注册
+   * @param alias
+   * @param value
+   */
   public void registerAlias(String alias, Class<?> value) {
     if (alias == null) {
       throw new TypeException("The parameter alias cannot be null");
     }
     // issue #748
+    // 转换为小写
     String key = alias.toLowerCase(Locale.ENGLISH);
+    // 如果已经注册过，报错
     if (TYPE_ALIASES.containsKey(key) && TYPE_ALIASES.get(key) != null && !TYPE_ALIASES.get(key).equals(value)) {
       throw new TypeException("The alias '" + alias + "' is already mapped to the value '" + TYPE_ALIASES.get(key).getName() + "'.");
     }
     TYPE_ALIASES.put(key, value);
   }
 
+  /**
+   * 转换小写
+   * @param alias
+   * @param value
+   */
   public void registerAlias(String alias, String value) {
     try {
       registerAlias(alias, Resources.classForName(value));

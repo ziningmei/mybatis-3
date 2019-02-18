@@ -26,7 +26,14 @@ import java.net.URL;
  */
 public class ClassLoaderWrapper {
 
+  /**
+   * 默认ClassLoader
+   */
   ClassLoader defaultClassLoader;
+
+  /**
+   * 系统默认ClassLoader
+   */
   ClassLoader systemClassLoader;
 
   ClassLoaderWrapper() {
@@ -39,6 +46,7 @@ public class ClassLoaderWrapper {
   
   /*
    * Get a resource as a URL using the current class path
+   * 获取指定资源url
    *
    * @param resource - the resource to locate
    * @return the resource or null
@@ -49,6 +57,8 @@ public class ClassLoaderWrapper {
 
   /*
    * Get a resource from the classpath, starting with a specific class loader
+   *
+   * 指定ClassLoader获取url
    *
    * @param resource    - the resource to find
    * @param classLoader - the first classloader to try
@@ -132,24 +142,31 @@ public class ClassLoaderWrapper {
   /*
    * Get a resource as a URL using the current class path
    *
+   * 当前类获取资源url
+   *
    * @param resource    - the resource to locate
    * @param classLoader - the class loaders to examine
    * @return the resource or null
    */
   URL getResourceAsURL(String resource, ClassLoader[] classLoader) {
 
+
     URL url;
 
+    //遍历ClassLoader数组
     for (ClassLoader cl : classLoader) {
 
+      //如果类加载器不为空
       if (null != cl) {
 
         // look for the resource as passed in...
+        //  获得 URL ，不带 /
         url = cl.getResource(resource);
 
         // ...but some class loaders want this leading "/", so we'll add it
         // and try again if we didn't find the resource
         if (null == url) {
+          //如果没有，带/再试试
           url = cl.getResource("/" + resource);
         }
 
@@ -204,6 +221,11 @@ public class ClassLoaderWrapper {
 
   }
 
+  /**
+   * 获取ClassLoader数组
+   * @param classLoader
+   * @return
+   */
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
     return new ClassLoader[]{
         classLoader,
