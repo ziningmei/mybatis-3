@@ -49,12 +49,29 @@ import org.apache.ibatis.type.TypeHandler;
 
 /**
  * @author Clinton Begin
+ *
+ * Mapper创建者
  */
 public class XMLMapperBuilder extends BaseBuilder {
 
+  /**
+   * java xpath解析起
+   */
   private final XPathParser parser;
+
+  /**
+   * Mapper 构造器助手
+   */
   private final MapperBuilderAssistant builderAssistant;
+
+  /**
+   * 可重用模块
+   */
   private final Map<String, XNode> sqlFragments;
+
+  /**
+   * 数据引用地址
+   */
   private final String resource;
 
   @Deprecated
@@ -88,9 +105,13 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   public void parse() {
+    //是否已经解析
     if (!configuration.isResourceLoaded(resource)) {
+      //解析mapper
       configurationElement(parser.evalNode("/mapper"));
+      //添加已经解析都文件
       configuration.addLoadedResource(resource);
+      //绑定namespace
       bindMapperForNamespace();
     }
 
@@ -105,16 +126,25 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void configurationElement(XNode context) {
     try {
+      //获取namespace
       String namespace = context.getStringAttribute("namespace");
+      //如果报错，抛出异常
       if (namespace == null || namespace.equals("")) {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
+      //记录当前namespacee
       builderAssistant.setCurrentNamespace(namespace);
+      //缓存引用
       cacheRefElement(context.evalNode("cache-ref"));
+      //缓存元素
       cacheElement(context.evalNode("cache"));
+      //参数
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      //结果
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      //sql
       sqlElement(context.evalNodes("/mapper/sql"));
+      //创建statement
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);

@@ -32,20 +32,46 @@ import org.apache.ibatis.cache.impl.PerpetualCache;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface CacheNamespace {
+
+  /**
+   *  负责存储的 Cache 实现类
+   * @return
+   */
   Class<? extends org.apache.ibatis.cache.Cache> implementation() default PerpetualCache.class;
 
+  /**
+   * 负责过期的 Cache 实现类
+   * @return
+   */
   Class<? extends org.apache.ibatis.cache.Cache> eviction() default LruCache.class;
 
+  /**
+   * 清空缓存的频率。0 代表不清空
+   * @return
+   */
   long flushInterval() default 0;
 
+  /**
+   * 默认大小
+   * @return
+   */
   int size() default 1024;
 
+  /**
+   * 是否序列化
+   * @return
+   */
   boolean readWrite() default true;
-  
+
+  /**
+   * 是否阻塞
+   * @return
+   */
   boolean blocking() default false;
 
   /**
    * Property values for a implementation object.
+   * {@link Property} 数组
    * @since 3.4.2
    */
   Property[] properties() default {};

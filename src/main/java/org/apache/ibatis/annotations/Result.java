@@ -31,19 +31,52 @@ import org.apache.ibatis.type.UnknownTypeHandler;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
 public @interface Result {
+
+  /**
+   * 是否是 ID 字段
+   * @return
+   */
   boolean id() default false;
 
+  /**
+   * 数据库的字段
+   * @return
+   */
   String column() default "";
 
+  /**
+   * Java 类中的属性
+   * @return
+   */
   String property() default "";
 
+  /**
+   * javaType
+   * @return
+   */
   Class<?> javaType() default void.class;
 
+  /**
+   * JdbcType
+   * @return
+   */
   JdbcType jdbcType() default JdbcType.UNDEFINED;
 
+  /**
+   * 使用的 TypeHandler 处理器
+   * @return
+   */
   Class<? extends TypeHandler> typeHandler() default UnknownTypeHandler.class;
 
+  /**
+   * {@link One} 注解
+   * @return
+   */
   One one() default @One;
 
+  /**
+   * {@link Many} 注解
+   * @return
+   */
   Many many() default @Many;
 }

@@ -406,28 +406,50 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析mapper节点
+   * @param parent
+   * @throws Exception
+   */
   private void mapperElement(XNode parent) throws Exception {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
+        //如果是包，扫描包路径下面的路径
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
+          //如果是文件，扫描文件
         } else {
+          //获取资源路径
           String resource = child.getStringAttribute("resource");
+          //获取url
           String url = child.getStringAttribute("url");
+          //获取class
           String mapperClass = child.getStringAttribute("class");
+          //如果路径不为空
           if (resource != null && url == null && mapperClass == null) {
+            //错误上下文
             ErrorContext.instance().resource(resource);
+            //获取xml文件
             InputStream inputStream = Resources.getResourceAsStream(resource);
+            //xml解析器
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
+            //解析文件
             mapperParser.parse();
+            //如果url不为空
           } else if (resource == null && url != null && mapperClass == null) {
+            //
             ErrorContext.instance().resource(url);
+            //
             InputStream inputStream = Resources.getUrlAsStream(url);
+            //
             XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
+            //
             mapperParser.parse();
           } else if (resource == null && url == null && mapperClass != null) {
+            //
             Class<?> mapperInterface = Resources.classForName(mapperClass);
+            //
             configuration.addMapper(mapperInterface);
           } else {
             throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
