@@ -154,6 +154,9 @@ public class Configuration {
   protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
   protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
 
+  /**
+   * 已加载资源( Resource )集合
+   */
   protected final Set<String> loadedResources = new HashSet<>();
   protected final Map<String, XNode> sqlFragments = new StrictMap<>("XML fragments parsed from previous mappers");
 
@@ -306,6 +309,11 @@ public class Configuration {
     loadedResources.add(resource);
   }
 
+  /**
+   * 判断资源是否已经加载
+   * @param resource
+   * @return
+   */
   public boolean isResourceLoaded(String resource) {
     return loadedResources.contains(resource);
   }
@@ -741,10 +749,19 @@ public class Configuration {
     mapperRegistry.addMappers(packageName, superType);
   }
 
+  /**
+   * 添加包下所有configuration
+   * @param packageName
+   */
   public void addMappers(String packageName) {
     mapperRegistry.addMappers(packageName);
   }
 
+  /**
+   * 添加
+   * @param type
+   * @param <T>
+   */
   public <T> void addMapper(Class<T> type) {
     mapperRegistry.addMapper(type);
   }

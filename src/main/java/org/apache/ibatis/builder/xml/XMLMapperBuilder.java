@@ -114,9 +114,11 @@ public class XMLMapperBuilder extends BaseBuilder {
       //绑定namespace
       bindMapperForNamespace();
     }
-
+    //解析待定的 <resultMap /> 节点
     parsePendingResultMaps();
+    //解析待定的 <cache-ref /> 节点
     parsePendingCacheRefs();
+    //解析待定的 SQL 语句的节点
     parsePendingStatements();
   }
 
@@ -138,13 +140,13 @@ public class XMLMapperBuilder extends BaseBuilder {
       cacheRefElement(context.evalNode("cache-ref"));
       //缓存元素
       cacheElement(context.evalNode("cache"));
-      //参数
+      //参数，已经废弃
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       //结果
       resultMapElements(context.evalNodes("/mapper/resultMap"));
-      //sql
+      //解析sql节点
       sqlElement(context.evalNodes("/mapper/sql"));
-      //创建statement
+      // 解析 <select /> <insert /> <update /> <delete /> 节点们
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing Mapper XML. The XML location is '" + resource + "'. Cause: " + e, e);
@@ -268,6 +270,11 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析 <resultMap /> 节点
+   * @param list
+   * @throws Exception
+   */
   private void resultMapElements(List<XNode> list) throws Exception {
     for (XNode resultMapNode : list) {
       try {
@@ -278,30 +285,55 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析 <resultMap /> 节点
+   * @param resultMapNode
+   * @return
+   * @throws Exception
+   */
   private ResultMap resultMapElement(XNode resultMapNode) throws Exception {
     return resultMapElement(resultMapNode, Collections.<ResultMapping> emptyList());
   }
 
+  /**
+   * 解析 <resultMap /> 节点
+   * @param resultMapNode
+   * @param additionalResultMappings
+   * @return
+   * @throws Exception
+   */
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings) throws Exception {
+
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+    //获取id 属性
     String id = resultMapNode.getStringAttribute("id",
         resultMapNode.getValueBasedIdentifier());
+    //获取type属性
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
+    //获取extends 属性
     String extend = resultMapNode.getStringAttribute("extends");
+    //获取autoMapping属性
     Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
+    //解析 type 对应的类
     Class<?> typeClass = resolveClass(type);
     Discriminator discriminator = null;
     List<ResultMapping> resultMappings = new ArrayList<>();
+    // 创建 ResultMapping 集合
     resultMappings.addAll(additionalResultMappings);
+    // 遍历 <resultMap /> 的子节点
     List<XNode> resultChildren = resultMapNode.getChildren();
+
     for (XNode resultChild : resultChildren) {
+      //处理constructor节点
       if ("constructor".equals(resultChild.getName())) {
         processConstructorElement(resultChild, typeClass, resultMappings);
+        //处理discriminator节点
       } else if ("discriminator".equals(resultChild.getName())) {
         discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
+        //处理其它节点
       } else {
         List<ResultFlag> flags = new ArrayList<>();
         if ("id".equals(resultChild.getName())) {
@@ -310,10 +342,12 @@ public class XMLMapperBuilder extends BaseBuilder {
         resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
       }
     }
+    //创建 ResultMapResolver 对象，执行解析
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
     try {
       return resultMapResolver.resolve();
     } catch (IncompleteElementException  e) {
+      //解析失败，添加到 configuration 中
       configuration.addIncompleteResultMap(resultMapResolver);
       throw e;
     }
