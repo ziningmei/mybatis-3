@@ -71,7 +71,9 @@ public class DefaultParameterHandlerTest {
   }
 
   MappedStatement getMappedStatement() {
+    //创建config
     final Configuration config = new Configuration();
+    //获取所有到类型处理器
     final TypeHandlerRegistry registry = config.getTypeHandlerRegistry();
     return new MappedStatement.Builder(config, "testSelect", new StaticSqlSource(config, "some select statement"), SqlCommandType.SELECT).resultMaps(
         new ArrayList<ResultMap>() {

@@ -30,6 +30,8 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ *
+ *
  */
 public final class MappedStatement {
 

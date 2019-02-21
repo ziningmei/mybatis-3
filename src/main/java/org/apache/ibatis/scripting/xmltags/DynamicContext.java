@@ -28,10 +28,19 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ *
+ * 动态上下文
  */
 public class DynamicContext {
 
+  /**
+   * {@link #bindings} _parameter 的键，参数
+   */
   public static final String PARAMETER_OBJECT_KEY = "_parameter";
+
+  /**
+   * {@link #bindings} _databaseId 的键，数据库编号
+   */
   public static final String DATABASE_ID_KEY = "_databaseId";
 
   static {

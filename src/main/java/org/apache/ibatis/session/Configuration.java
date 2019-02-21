@@ -146,6 +146,10 @@ public class Configuration {
   protected final InterceptorChain interceptorChain = new InterceptorChain();
   protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
   protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+  /**
+   * 初始化语言驱动注册
+   */
   protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
   protected final Map<String, MappedStatement> mappedStatements = new StrictMap<>("Mapped Statements collection");
@@ -207,7 +211,9 @@ public class Configuration {
     typeAliasRegistry.registerAlias("CGLIB", CglibProxyFactory.class);
     typeAliasRegistry.registerAlias("JAVASSIST", JavassistProxyFactory.class);
 
+    //设置默认语言驱动
     languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
+    //注册驱动
     languageRegistry.register(RawLanguageDriver.class);
   }
 

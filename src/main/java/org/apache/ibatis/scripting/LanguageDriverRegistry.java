@@ -20,17 +20,30 @@ import java.util.Map;
 
 /**
  * @author Frank D. Martinez [mnesarco]
+ *
+ * 语言驱动注册类
  */
 public class LanguageDriverRegistry {
 
+  /**
+   * LanguageDriver，map关系
+   */
   private final Map<Class<? extends LanguageDriver>, LanguageDriver> LANGUAGE_DRIVER_MAP = new HashMap<>();
 
+  /**
+   * 默认驱动
+   */
   private Class<? extends LanguageDriver> defaultDriverClass;
 
+  /**
+   * 注册class注册
+   * @param cls
+   */
   public void register(Class<? extends LanguageDriver> cls) {
     if (cls == null) {
       throw new IllegalArgumentException("null is not a valid Language Driver");
     }
+    //如果不存在，则添加
     if (!LANGUAGE_DRIVER_MAP.containsKey(cls)) {
       try {
         LANGUAGE_DRIVER_MAP.put(cls, cls.newInstance());
@@ -40,6 +53,10 @@ public class LanguageDriverRegistry {
     }
   }
 
+  /**
+   * 通过实例注册
+   * @param instance
+   */
   public void register(LanguageDriver instance) {
     if (instance == null) {
       throw new IllegalArgumentException("null is not a valid Language Driver");
@@ -49,19 +66,36 @@ public class LanguageDriverRegistry {
       LANGUAGE_DRIVER_MAP.put(cls, instance);
     }
   }
-  
+
+  /**
+   * 获取驱动
+   * @param cls
+   * @return
+   */
   public LanguageDriver getDriver(Class<? extends LanguageDriver> cls) {
     return LANGUAGE_DRIVER_MAP.get(cls);
   }
 
+  /**
+   * 获取默认
+   * @return
+   */
   public LanguageDriver getDefaultDriver() {
     return getDriver(getDefaultDriverClass());
   }
 
+  /**
+   * 返回默认驱动
+   * @return
+   */
   public Class<? extends LanguageDriver> getDefaultDriverClass() {
     return defaultDriverClass;
   }
 
+  /**
+   * 注册默认驱动
+   * @param defaultDriverClass
+   */
   public void setDefaultDriverClass(Class<? extends LanguageDriver> defaultDriverClass) {
     register(defaultDriverClass);
     this.defaultDriverClass = defaultDriverClass;
